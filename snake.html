@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Snake Game</title>
+        <link rel="stylesheet" href="style.css">
+
+    </head>
+    <script>
+        let dx = 0;
+        let dy = 0;
+        let apple = {
+            x: 0,
+            y: 0
+        }
+        let snake = []
+        snake.push({
+                x: 10,
+                y: 10
+            });
+        snake.push({
+                x: 10,
+                y: 10
+        });
+        function game()
+        {
+            
+            let mapa = document.getElementById("map");
+            for(let i =0; i < 21; ++i)
+            {
+                const kol = document.createElement('tr');
+                mapa.append(kol)
+                for(let j = 0; j < 21; ++j)
+                {
+                    const komora = document.createElement('td')
+                    if(i==0 || i==20 || j==0 || j==20)
+                    {
+                        komora.classList.add('border')
+                    }
+                    else{
+                        komora.classList.add('pusta')
+                    }
+                    kol.append(komora);
+                }
+            }
+            setapple();
+            interval = setInterval(() => {
+                movesnake();
+            }, 100)
+           
+            
+            
+        }
+        function setapple() 
+        {
+            let x, y;
+            let czykolizja = false;
+            do {  
+                x = Math.floor(Math.random() * 21);
+                y = Math.floor(Math.random() * 21);
+                for(let i = 0; i < snake.length; ++i)
+                {
+                    if(snake[i].x === x && snake[i].y === y)
+                    {
+                        czykolizja = true;
+                        break;
+                    }
+                }
+
+            }while(czykolizja || x == 0 || x === 20 || y === 0 || y === 20 )
+                apple.x = x;
+                apple.y = y;
+                document.getElementById('map').rows[apple.x].cells[apple.y].classList.add('apple')
+                
+            }
+        function gameover()
+        {
+            alert('KONIEC GRY! PRZEGRALES!');
+            location.reload();
+        }
+        function movesnake()
+        {
+            let oldx = snake[snake.length - 1].x 
+            let oldy = snake[snake.length - 1].y 
+            console.log(snake)
+           
+            snake[0].x += dx;
+            snake[0].y += dy;
+            for (let i = snake.length - 1; i > 0; i--) {
+                snake[i].x = snake[i - 1].x;
+                snake[i].y = snake[i - 1].y;
+            }
+            if(apple.x == snake[0].x && apple.y == snake[0].y)
+            {
+                let lapplex = apple.x;
+                let lappley = apple.y;
+                snake.push({
+                    x: oldx,
+                    y: oldy
+                })
+                setapple();
+                document.getElementById('map').rows[lapplex].cells[lappley].classList.remove('apple')
+            }
+            for(let i = 2; i < snake.length; i++)
+            {
+                if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) 
+                {
+                    gameover();
+            
+                }
+            }
+            if(snake[0].x === 20 || snake[0].x === 0 || snake[0].y === 0 || snake[0].y === 20)
+            {
+                gameover();
+                
+            }
+            showsnake(oldx, oldy);
+            
+        }
+        function showsnake(oldx, oldy) {
+            for (let i = 0; i < 21; ++i) {
+                for (let j = 0; j < 21; ++j) {
+                    document.getElementById('map').rows[i].cells[j].classList.remove('snake');
+                }
+            }
+
+            for (let k = 0; k < snake.length; ++k) {
+                const x = snake[k].x;
+                const y = snake[k].y;
+                document.getElementById('map').rows[x].cells[y].classList.add('snake');
+
+                if (!(x === oldx && y === oldy)) {
+                    document.getElementById('map').rows[oldx].cells[oldy].classList.remove('snake');
+                }
+            }
+        }
+
+        function kDown(event)
+        {
+                console.log(event.which)
+                switch(event.which) {
+                    case 38:
+                        if(snake.length > 2 && dx === 1)
+                        {
+                            break;
+                        }
+                        else { 
+                        dx = -1;
+                        dy = 0;
+                        console.log(dx + ' ' + dy)
+                        break;
+                        }
+                    case 40:
+                        if(snake.length > 2 && dx === -1)
+                        {
+                            break;
+                        }
+                        else {
+                        dx = 1;
+                        dy = 0;
+                        console.log(dx + ' ' + dy)
+                        break;
+                        }
+                    case 37:
+                        if(snake.length > 2 && dy === 1)
+                        {
+                            break;
+                        }
+                        else {
+                        dx = 0
+                        dy = -1;
+                        console.log(dx + ' ' + dy)
+                        break;
+                        }
+                    case 39:
+                        if(snake.length > 2 && dy === -1)
+                        {
+                            break;
+                        }
+                        else {
+                        dx = 0;
+                        dy = 1;
+                        console.log(dx + ' ' + dy)
+                        break;
+                        }
+                }
+        }
+    </script>
+    <body onload="game()" onkeydown="kDown(event)">
+    <table id="map">
+
+    </table>
+    </body>
+
+</html>
